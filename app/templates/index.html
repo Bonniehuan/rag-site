@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>RAG 問答系統</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>📚 RAG 教學問答系統</h1>
+    <div class="chat-container">
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="請輸入你的問題..." autofocus />
+        <button onclick="sendMessage()">送出</button>
+    </div>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById("user-input");
+        const message = input.value.trim();
+        if (!message) return;
+
+        const chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML += `<div class="user-msg"><b>你：</b> ${message}</div>`;
+        input.value = "";
+
+        try {
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: message }) // ✅ 修正這一行（從 message -> question）
+            });
+
+            const data = await response.json();
+
+            if (data.answer) {
+                chatBox.innerHTML += `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
+            } else if (data.error) {
+                chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${data.error}</div>`;
+            } else {
+                chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> 未知回應</div>`;
+            }
+        } catch (err) {
+            chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
