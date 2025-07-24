@@ -30,9 +30,6 @@ def ask():
         return jsonify({ "answer": None, "error": str(e) })
 
 if __name__ == "__main__":
-    import uvicorn
-    import os
+    app.run(host="0.0.0.0", port=8000)
 
-    port = int(os.environ.get("PORT", 8080))  # 預設 8080，但 Render 會傳自己的 PORT
-    uvicorn.run(app, host="0.0.0.0", port=port)
 
