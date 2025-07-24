@@ -1,0 +1,6 @@
+flask
+langchain
+langchain-openai
+langchain-community
+chromadb
+python-dotenv
