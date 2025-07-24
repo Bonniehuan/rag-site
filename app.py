@@ -30,8 +30,9 @@ def ask():
         return jsonify({ "answer": None, "error": str(e) })
 
 if __name__ == "__main__":
-    def open_browser():
-        webbrowser.open_new("http://127.0.0.1:5000")  # ✅ 你本地的網址
+    import uvicorn
+    import os
 
-    threading.Timer(1.0, open_browser).start()  # 延遲一秒啟動瀏覽器
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8080))  # 預設 8080，但 Render 會傳自己的 PORT
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
