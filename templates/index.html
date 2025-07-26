@@ -18,88 +18,86 @@
 </head>
 <body>
     <h1>📚 RAG 教學問答系統</h1>
-    <div class="chat-input-wrapper">
-           <input type="text" id="user-input" placeholder="請輸入您的問題…" />
-    	   <button class="send-btn" onclick="sendMessage()">發送</button>
-    	   <button class="clear-btn" onclick="clearChat()">🧹</button>
+
+    <div class="chat-container">
+        <div id="chat-box"></div>
     </div>
 
+    <div class="chat-input-wrapper">
+        <button class="clear-btn" onclick="clearHistory()">🧹</button>
+        <input type="text" id="user-input" placeholder="請輸入您的問題…" />
+        <button class="send-btn" onclick="sendMessage()">發送</button>
+    </div>
 
-<script>
-    // 初始化時載入歷史紀錄
-    document.addEventListener("DOMContentLoaded", () => {
-        const savedHistory = localStorage.getItem("chatHistory");
-        if (savedHistory) {
-            document.getElementById("chat-box").innerHTML = savedHistory;
-            scrollToBottom();
+    <script>
+        // 初始化時載入歷史紀錄
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedHistory = localStorage.getItem("chatHistory");
+            if (savedHistory) {
+                document.getElementById("chat-box").innerHTML = savedHistory;
+                scrollToBottom();
+            }
+        });
+
+        function saveHistory() {
+            const chatBox = document.getElementById("chat-box");
+            localStorage.setItem("chatHistory", chatBox.innerHTML);
         }
-    });
 
-    // 儲存紀錄
-    function saveHistory() {
-        const chatBox = document.getElementById("chat-box");
-        localStorage.setItem("chatHistory", chatBox.innerHTML);
-    }
+        function clearHistory() {
+            localStorage.removeItem("chatHistory");
+            document.getElementById("chat-box").innerHTML = "";
+        }
 
-    // 清除紀錄
-    function clearHistory() {
-        localStorage.removeItem("chatHistory");
-        document.getElementById("chat-box").innerHTML = "";
-    }
+        function scrollToBottom() {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
-    // 自動滑到底部
-    function scrollToBottom() {
-        const chatBox = document.getElementById("chat-box");
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const message = input.value.trim();
+            if (!message) return;
 
-    // 傳送訊息
-    async function sendMessage() {
-        const input = document.getElementById("user-input");
-        const message = input.value.trim();
-        if (!message) return;
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<div class="user-msg"><b>你：</b> ${message}</div>`;
+            input.value = "";
 
-        const chatBox = document.getElementById("chat-box");
-        chatBox.innerHTML += `<div class="user-msg"><b>你：</b> ${message}</div>`;
-        input.value = "";
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: message })
+                });
 
-        try {
-            const response = await fetch('/ask', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: message }) 
-            });
+                const data = await response.json();
 
-            const data = await response.json();
+                if (data.answer) {
+                    let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
 
-            if (data.answer) {
-                let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
-
-                if (data.context && data.context.length > 0) {
-                    answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
-                    for (const chunk of data.context) {
-                        if (chunk.trim()) {
-                            answerHtml += `<li>${chunk.trim()}</li>`;
+                    if (data.context && data.context.length > 0) {
+                        answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
+                        for (const chunk of data.context) {
+                            if (chunk.trim()) {
+                                answerHtml += `<li>${chunk.trim()}</li>`;
+                            }
                         }
+                        answerHtml += `</ul></div>`;
                     }
-                    answerHtml += `</ul></div>`;
-                }
 
-                chatBox.innerHTML += answerHtml;
-            } else if (data.error) {
-                chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${data.error}</div>`;
-            } else {
-                chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> 未知回應</div>`;
+                    chatBox.innerHTML += answerHtml;
+                } else if (data.error) {
+                    chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${data.error}</div>`;
+                } else {
+                    chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> 未知回應</div>`;
+                }
+            } catch (err) {
+                chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
             }
 
-        } catch (err) {
-            chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
+            saveHistory();
+            scrollToBottom();
         }
-
-        saveHistory();
-        scrollToBottom();
-    }
-</script>
-
+    </script>
 </body>
 </html>
