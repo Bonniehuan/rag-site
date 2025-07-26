@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <title>RAG 問答系統</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .source-box {
+            font-size: 13px;
+            color: #777;
+            background: #f9f9f9;
+            border-left: 4px solid #ccc;
+            padding: 8px 12px;
+            margin-top: 8px;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body>
     <h1>📚 RAG 教學問答系統</h1>
@@ -11,9 +22,38 @@
         <div id="chat-box"></div>
         <input type="text" id="user-input" placeholder="請輸入你的問題..." autofocus />
         <button onclick="sendMessage()">送出</button>
+        <button onclick="clearHistory()" style="margin-left: 10px;">清除紀錄</button>
     </div>
 
 <script>
+    // 初始化時載入歷史紀錄
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedHistory = localStorage.getItem("chatHistory");
+        if (savedHistory) {
+            document.getElementById("chat-box").innerHTML = savedHistory;
+            scrollToBottom();
+        }
+    });
+
+    // 儲存紀錄
+    function saveHistory() {
+        const chatBox = document.getElementById("chat-box");
+        localStorage.setItem("chatHistory", chatBox.innerHTML);
+    }
+
+    // 清除紀錄
+    function clearHistory() {
+        localStorage.removeItem("chatHistory");
+        document.getElementById("chat-box").innerHTML = "";
+    }
+
+    // 自動滑到底部
+    function scrollToBottom() {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // 傳送訊息
     async function sendMessage() {
         const input = document.getElementById("user-input");
         const message = input.value.trim();
@@ -35,13 +75,15 @@
             if (data.answer) {
                 let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
 
-	    if (data.context && Array.isArray(data.context)) {
-    	        answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
-                data.context.forEach(item => {
-                        answerHtml += `<li class="source-item">${item}</li>`;
-                });
-                answerHtml += `</ul></div>`;
-            }
+                if (data.context && data.context.length > 0) {
+                    answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
+                    for (const chunk of data.context) {
+                        if (chunk.trim()) {
+                            answerHtml += `<li>${chunk.trim()}</li>`;
+                        }
+                    }
+                    answerHtml += `</ul></div>`;
+                }
 
                 chatBox.innerHTML += answerHtml;
             } else if (data.error) {
@@ -49,11 +91,13 @@
             } else {
                 chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> 未知回應</div>`;
             }
+
         } catch (err) {
             chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
         }
 
-        chatBox.scrollTop = chatBox.scrollHeight;
+        saveHistory();
+        scrollToBottom();
     }
 </script>
 
