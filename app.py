@@ -1,4 +1,5 @@
 # app.py
+import os
 from flask import Flask, render_template, request, jsonify
 import asyncio
 from RAG_Helper import RAGHelper
