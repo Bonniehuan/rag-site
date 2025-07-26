@@ -18,12 +18,12 @@
 </head>
 <body>
     <h1>📚 RAG 教學問答系統</h1>
-    <div class="chat-container">
-        <div id="chat-box"></div>
-        <input type="text" id="user-input" placeholder="請輸入你的問題..." autofocus />
-        <button onclick="sendMessage()">送出</button>
-        <button onclick="clearHistory()" style="margin-left: 10px;">清除紀錄</button>
+    <div class="chat-input-wrapper">
+           <input type="text" id="user-input" placeholder="請輸入您的問題…" />
+    	   <button class="send-btn" onclick="sendMessage()">發送</button>
+    	   <button class="clear-btn" onclick="clearChat()">🧹</button>
     </div>
+
 
 <script>
     // 初始化時載入歷史紀錄
