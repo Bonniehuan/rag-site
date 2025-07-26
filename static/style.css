@@ -71,6 +71,8 @@ h1 {
     bottom: 0;
     left: 0;
     width: 100%;
+    max-width: 900px; /* 你可以改成你想要的寬度 */
+    margin-left: 40px;
     background: white;
     display: flex;
     align-items: center; /* 垂直置中 */
