@@ -73,43 +73,43 @@ h1 {
     width: 100%;
     background: white;
     display: flex;
-    justify-content: center;
-    align-items: center;   /* 加這行讓所有按鈕跟輸入框垂直對齊 */
-    gap: 10px;
-    padding: 10px 20px;
+    align-items: center; /* 垂直置中 */
+    padding: 10px 16px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 999;
+    gap: 10px;
 }
 
-/* 修正輸入框 */
+/* 輸入框 */
 .chat-input-wrapper input[type="text"] {
     flex: 1;
     padding: 12px 16px;
     font-size: 16px;
     border: none;
-    border-radius: 40px;
-    background-color: #f7f7f7;
+    border-radius: 30px;
+    background-color: #f5f5f5;
     outline: none;
-    height: 45px;
+    height: 44px; /* 統一高度 */
 }
 
-/* 統一按鈕高度和邊距 */
-.send-btn, .clear-btn {
+/* 發送按鈕與清除按鈕 */
+.send-btn,
+.clear-btn {
+    height: 44px; /* 與輸入框一樣高 */
+    padding: 0 20px; /* 固定左右內距 */
+    border-radius: 30px;
     background-color: #5b4de1;
     color: white;
     border: none;
-    padding: 12px 20px;
-    height: 45px;
     font-size: 15px;
-    border-radius: 25px;
     cursor: pointer;
-    transition: background-color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-
-.send-btn:hover, .clear-btn:hover {
+.send-btn:hover,
+.clear-btn:hover {
     background-color: #4439c3;
 }
+
