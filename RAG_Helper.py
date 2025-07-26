@@ -1,3 +1,15 @@
+import os
+from typing import List, Tuple
+from langchain_community.document_loaders import (
+    PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
+)
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains import RetrievalQA
+from dotenv import load_dotenv
+from langchain.schema import Document
+load_dotenv()
 class RAGHelper:
     def __init__(self, pdf_folder: str):
         self.pdf_folder = pdf_folder
