@@ -17,22 +17,21 @@ def index():
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    user_input = request.json.get("question")
     try:
-        answer, context = rag.ask(user_input)
-        sources = []
-        for doc in context:
-            source = doc.metadata.get("source", "未知檔案")
-            page = doc.metadata.get("page", "未知頁碼")
-            content = doc.page_content.strip().replace("\n", " ")
-            sources.append(f"<li><b>{source}（第 {page} 頁）</b>：{content}</li>")
-        sources_html = "<ul>" + "".join(sources) + "</ul>"
-        return jsonify({
-            "answer": answer,
-            "sources": sources_html
-        })
+        data = request.get_json()
+        question = data.get("question")
+        if not question:
+            return jsonify({"error": "沒有輸入問題"}), 400
+
+        answer, sources = rag.ask(question)
+        # 截斷來源內容為前 100 字
+        context_texts = [doc.page_content.strip()[:100] + "…" for doc in sources]
+        context_combined = "\n\n".join(context_texts)
+
+        return jsonify({"answer": answer, "context": context_combined})
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
+
 
 
 
