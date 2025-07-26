@@ -55,10 +55,10 @@ class RAGHelper:
             raise RuntimeError("❌ 請先執行 load_and_prepare() 載入向量資料庫")
         retriever = self.vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 3})
         llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-        self.qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+        self.qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever,return_source_documents=True)
 
-    def ask(self, query: str) -> Tuple[str, dict]:
-        if not self.qa_chain:
-            raise RuntimeError("❌ QA chain 尚未初始化，請先呼叫 setup_retrieval_chain()")
-        result = self.qa_chain({"query": query})
-        return result["result"], result
+def ask(self, query: str) -> Tuple[str, List[Document]]:
+    if not self.qa_chain:
+        raise RuntimeError("❌ QA chain 尚未初始化，請先呼叫 setup_retrieval_chain()")
+    result = self.qa_chain({"query": query})
+    return result["result"], result["source_documents"]

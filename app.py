@@ -17,17 +17,24 @@ def index():
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    user_input = request.json.get("question")  # <== 注意：前端要傳 "question"
+    user_input = request.json.get("question")
     try:
-        print(f"[使用者問題]：{user_input}")
         answer, context = rag.ask(user_input)
-        sources = "\n".join([doc.page_content for doc in context.get("source_documents", [])])
+        sources = []
+        for doc in context:
+            source = doc.metadata.get("source", "未知檔案")
+            page = doc.metadata.get("page", "未知頁碼")
+            content = doc.page_content.strip().replace("\n", " ")
+            sources.append(f"<li><b>{source}（第 {page} 頁）</b>：{content}</li>")
+        sources_html = "<ul>" + "".join(sources) + "</ul>"
         return jsonify({
             "answer": answer,
-            "context": sources
+            "sources": sources_html
         })
     except Exception as e:
-        return jsonify({ "answer": None, "error": str(e) })
+        return jsonify({"error": str(e)})
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
