@@ -8,6 +8,7 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
 from dotenv import load_dotenv
+from langchain.schema import Document
 load_dotenv()
 
 class RAGHelper:
