@@ -1,4 +1,3 @@
-/* 整體背景與字體 */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #7f7fd5, #86a8e7, #91eae4);
@@ -7,7 +6,7 @@ body {
     color: #333;
 }
 
-/* 頁面標題 */
+/* 標題 */
 h1 {
     text-align: center;
     font-size: 28px;
@@ -15,29 +14,25 @@ h1 {
     color: #333;
 }
 
-h1::before {
-    content: "📚 ";
-}
-
 /* 聊天容器 */
 .chat-container {
-    max-width: 800px;
-    margin: 0 auto 20px;
+    max-width: 900px;
+    margin: 0 auto;
     background: white;
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 20px;
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* 聊天訊息框 */
+/* 聊天內容框 */
 #chat-box {
-    max-height: 500px;
+    max-height: calc(100vh - 240px);
     overflow-y: auto;
-    padding: 10px;
-    margin-bottom: 20px;
+    padding: 15px;
+    padding-bottom: 130px;
 }
 
-/* 使用者與 AI 訊息氣泡 */
+/* 氣泡 */
 .user-msg, .bot-msg {
     margin: 15px 0;
     padding: 12px 16px;
@@ -48,41 +43,48 @@ h1::before {
 
 .user-msg {
     background: #dfe8ff;
-    align-self: flex-end;
 }
 
 .bot-msg {
     background: #f5f5f5;
 }
 
-/* 資料來源樣式 */
-.source-box {
-    font-size: 14px;
-    color: #666;
-    margin-top: 10px;
-    background: #f1f1f1;
-    padding: 10px;
-    border-radius: 10px;
+.bot-msg.error {
+    background: #ffe6e6;
+    color: #a00;
+    font-weight: bold;
 }
 
-/* 輸入框區塊 */
+/* 資料來源 */
+.source-box {
+    font-size: 13px;
+    color: #777;
+    background: #f9f9f9;
+    border-left: 4px solid #ccc;
+    padding: 8px 12px;
+    margin-top: 10px;
+    border-radius: 6px;
+}
+
+/* 輸入區塊 */
 .chat-input-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
     display: flex;
-    align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 15px;
-    background: white;
-    border-radius: 50px;
-    max-width: 800px;
-    margin: 0 auto 40px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 25px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 999;
 }
 
 /* 輸入欄位 */
 .chat-input-wrapper input[type="text"] {
     flex: 1;
-    padding: 15px 20px;
+    padding: 14px 20px;
     font-size: 16px;
     border: none;
     border-radius: 40px;
@@ -90,7 +92,7 @@ h1::before {
     outline: none;
 }
 
-/* 按鈕樣式 */
+/* 按鈕 */
 .send-btn, .clear-btn {
     background-color: #5b4de1;
     color: white;
@@ -104,11 +106,4 @@ h1::before {
 
 .send-btn:hover, .clear-btn:hover {
     background-color: #4439c3;
-}
-
-/* 錯誤訊息樣式 */
-.bot-msg.error {
-    background: #ffe6e6;
-    color: #a00;
-    font-weight: bold;
 }

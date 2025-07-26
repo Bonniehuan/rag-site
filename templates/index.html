@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <title>RAG 問答系統</title>
     <link rel="stylesheet" href="/static/style.css">
-    <style>
-        .source-box {
-            font-size: 13px;
-            color: #777;
-            background: #f9f9f9;
-            border-left: 4px solid #ccc;
-            padding: 8px 12px;
-            margin-top: 8px;
-            border-radius: 6px;
-        }
-    </style>
 </head>
 <body>
     <h1>📚 RAG 教學問答系統</h1>
@@ -23,14 +12,14 @@
         <div id="chat-box"></div>
     </div>
 
+    <!-- 固定在底部的輸入框 -->
     <div class="chat-input-wrapper">
-        <button class="clear-btn" onclick="clearHistory()">🧹</button>
+        <button class="clear-btn" onclick="clearChat()">🧹</button>
         <input type="text" id="user-input" placeholder="請輸入您的問題…" />
         <button class="send-btn" onclick="sendMessage()">發送</button>
     </div>
 
     <script>
-        // 初始化時載入歷史紀錄
         document.addEventListener("DOMContentLoaded", () => {
             const savedHistory = localStorage.getItem("chatHistory");
             if (savedHistory) {
@@ -44,7 +33,7 @@
             localStorage.setItem("chatHistory", chatBox.innerHTML);
         }
 
-        function clearHistory() {
+        function clearChat() {
             localStorage.removeItem("chatHistory");
             document.getElementById("chat-box").innerHTML = "";
         }
@@ -86,11 +75,10 @@
                     }
 
                     chatBox.innerHTML += answerHtml;
-                } else if (data.error) {
-                    chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${data.error}</div>`;
                 } else {
-                    chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> 未知回應</div>`;
+                    chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${data.error || '未知錯誤'}</div>`;
                 }
+
             } catch (err) {
                 chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
             }
