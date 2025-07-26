@@ -35,16 +35,13 @@
             if (data.answer) {
                 let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
 
-                if (data.context) {
-                    const chunks = data.context.split(/\n{2,}/);
-                    answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
-                    for (const chunk of chunks) {
-                        if (chunk.trim()) {
-                            answerHtml += `<li>${chunk.trim()}</li>`;
-                        }
-                    }
-                    answerHtml += `</ul></div>`;
-                }
+	    if (data.context && Array.isArray(data.context)) {
+    	        answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
+                data.context.forEach(item => {
+                        answerHtml += `<li class="source-item">${item}</li>`;
+                });
+                answerHtml += `</ul></div>`;
+            }
 
                 chatBox.innerHTML += answerHtml;
             } else if (data.error) {

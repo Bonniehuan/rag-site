@@ -24,13 +24,21 @@ def ask():
             return jsonify({"error": "沒有輸入問題"}), 400
 
         answer, sources = rag.ask(question)
-        # 截斷來源內容為前 100 字
-        context_texts = [doc.page_content.strip()[:100] + "…" for doc in sources]
-        context_combined = "\n\n".join(context_texts)
 
-        return jsonify({"answer": answer, "context": context_combined})
+        source_info = []
+        for doc in sources:
+            content = doc.page_content.strip()[:100].replace("\n", "") + "…"  # 取前100字
+            filename = os.path.basename(doc.metadata.get("source", "未知來源"))
+            page = doc.metadata.get("page", "未知頁碼")
+            source_info.append(f"{filename}（第 {page} 頁）：{content}")
+
+        return jsonify({
+            "answer": answer,
+            "context": source_info
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 
