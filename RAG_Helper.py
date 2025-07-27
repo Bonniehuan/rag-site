@@ -16,7 +16,7 @@ from langchain_community.document_loaders import (
 
 
 class RAGHelper:
-    def __init__(self, folder_path, chunk_size=300, chunk_overlap=50):
+    def __init__(self, folder_path, chunk_size=150, chunk_overlap=30):
         self.folder_path = folder_path
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
