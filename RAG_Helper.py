@@ -3,7 +3,7 @@ import glob
 from pathlib import Path
 from typing import List, Tuple
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -22,6 +22,7 @@ class RAGHelper:
         self.chunk_overlap = chunk_overlap
         self.vectorstore = None
         self.retrieval_chain = None
+        self.persist_dir = "chroma_db"  # 儲存資料夾名稱
 
     def get_loader(self, path: str):
         ext = Path(path).suffix.lower()
@@ -60,18 +61,17 @@ class RAGHelper:
     def _build_vectorstore(self, documents: List[Document]):
         print(f"📦 建立向量資料庫，共 {len(documents)} 段")
         embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-        self.vectorstore = FAISS.from_documents(documents, embeddings)
-        self.vectorstore.save_local("my_faiss_index")
+        self.vectorstore = Chroma.from_documents(documents, embeddings, persist_directory=self.persist_dir)
+        self.vectorstore.persist()  # 儲存至本地
 
     async def load_and_prepare(self, file_extensions: List[str] = None):
         print("📂 開始載入檔案...")
 
-        if os.path.exists("my_faiss_index"):
+        if os.path.exists(self.persist_dir):
             print("🔁 偵測到已存在向量資料庫，直接載入")
-            self.vectorstore = FAISS.load_local(
-                "my_faiss_index",
-                OpenAIEmbeddings(model="text-embedding-3-small"),
-                allow_dangerous_deserialization=True
+            self.vectorstore = Chroma(
+                persist_directory=self.persist_dir,
+                embedding_function=OpenAIEmbeddings(model="text-embedding-3-small")
             )
             return
 
