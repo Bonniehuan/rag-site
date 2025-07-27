@@ -109,7 +109,7 @@ class RAGHelper:
         if not self.vectorstore:
             raise ValueError("請先執行 load_and_prepare()")
 
-        llm = ChatOpenAI(model="gpt-4o", temperature=0.0)
+        llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.0)
         retriever = self.vectorstore.as_retriever(search_kwargs={"k": 5})
         prompt = ChatPromptTemplate.from_messages([
             ("system", "你是一個問答助手，根據以下內容回答問題。\n\n{context}"),
