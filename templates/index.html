@@ -46,6 +46,11 @@
     </div>
 
 <script>
+    function scrollToBottom() {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     async function sendMessage() {
         const input = document.getElementById("user-input");
         const message = input.value.trim();
@@ -95,10 +100,11 @@
             chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
         }
 
-        saveHistory();
+        saveHistory?.();  // 加上 ? 避免 saveHistory 未定義報錯
         scrollToBottom();
     }
 </script>
+
 
 
 
