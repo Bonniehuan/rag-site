@@ -6,7 +6,7 @@ from RAG_Helper import RAGHelper
 import webbrowser
 import threading
 app = Flask(__name__)
-rag = RAGHelper(folder="pdfFiles")
+rag = RAGHelper(folder_path="pdfFiles")
 
 
 # 初始化知識庫與檢索鏈
