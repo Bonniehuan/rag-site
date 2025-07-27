@@ -46,28 +46,6 @@
     </div>
 
 <script>
-    // 初始化時載入歷史紀錄
-    document.addEventListener("DOMContentLoaded", () => {
-        const savedHistory = localStorage.getItem("chatHistory");
-        if (savedHistory) {
-            document.getElementById("chat-box").innerHTML = savedHistory;
-            scrollToBottom();
-        }
-    });
-
-    // 儲存紀錄
-    function saveHistory() {
-        const chatBox = document.getElementById("chat-box");
-        localStorage.setItem("chatHistory", chatBox.innerHTML);
-    }
-
-    // 自動滑到底部
-    function scrollToBottom() {
-        const chatBox = document.getElementById("chat-box");
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    // 傳送訊息
     async function sendMessage() {
         const input = document.getElementById("user-input");
         const message = input.value.trim();
@@ -87,15 +65,19 @@
             const response = await fetch('/ask', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: message }) 
+                body: JSON.stringify({ question: message })
             });
 
             const data = await response.json();
-
             loadingMsg.remove();
 
             if (data.answer) {
-                let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
+                // ✨ 將 AI 回答的數字列表換行
+                const formattedAnswer = data.answer.replace(/(\d+\.)(?=\S)/g, '<br>$1');
+
+                let answerHtml = `<div class="bot-msg"><b>AI：</b> ${formattedAnswer}</div>`;
+
+                // 顯示資料來源（若有）
                 if (data.context && data.context.length > 0) {
                     answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
                     for (const chunk of data.context) {
@@ -105,6 +87,7 @@
                     }
                     answerHtml += `</ul></div>`;
                 }
+
                 chatBox.innerHTML += answerHtml;
             } else if (data.error) {
                 chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${data.error}</div>`;
@@ -119,15 +102,8 @@
         saveHistory();
         scrollToBottom();
     }
-
-    // 允許按 Enter 發送
-    document.getElementById("user-input").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            sendMessage();
-        }
-    });
 </script>
+
 
 </body>
 </html>
