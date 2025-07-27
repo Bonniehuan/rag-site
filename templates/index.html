@@ -72,12 +72,8 @@
             loadingMsg.remove();
 
             if (data.answer) {
-                // ✨ 將 AI 回答的數字列表換行
-                const formattedAnswer = data.answer.replace(/(\d+\.)(?=\S)/g, '<br>$1');
+                let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
 
-                let answerHtml = `<div class="bot-msg"><b>AI：</b> ${formattedAnswer}</div>`;
-
-                // 顯示資料來源（若有）
                 if (data.context && data.context.length > 0) {
                     answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
                     for (const chunk of data.context) {
@@ -103,6 +99,7 @@
         scrollToBottom();
     }
 </script>
+
 
 
 </body>
