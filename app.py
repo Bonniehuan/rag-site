@@ -6,7 +6,8 @@ from RAG_Helper import RAGHelper
 import webbrowser
 import threading
 app = Flask(__name__)
-rag = RAGHelper(pdf_folder="pdfFiles")
+rag = RAGHelper(folder="pdfFiles")
+
 
 # 初始化知識庫與檢索鏈
 asyncio.run(rag.load_and_prepare(file_extensions=[".pdf", ".txt", ".docx"]))
