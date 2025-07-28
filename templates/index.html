@@ -1,79 +1,79 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">              			/*指定語言為繁體中文*/
+<html lang="zh-Hant">              		
 
-<head>								/*設定網站基本資料*/
-    <meta charset="UTF-8">			/*定義編碼為 UTF-8*/
-    <title>RAG 教學問答系統</title>		/*瀏覽器標籤上顯示的標題*/
-    <link rel="stylesheet" href="/static/style.css">	/*載入外部 CSS 檔案 style.css，控制網頁外觀樣式*/
+<head>							
+    <meta charset="UTF-8">		
+    <title>RAG 教學問答系統</title>	
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
-<body>/*頁面主要內容*/
-    <h1>📚 RAG 教學問答系統</h1>		/*頁面大標題，顯示在最上方*/
+<body>
+    <h1>📚 RAG 教學問答系統</h1>	
 
     <!-- 聊天訊息顯示區 -->
-    <div id="chat-box" class="chat-container"></div>		/*顯示聊天紀錄的容器，chat-container 是為了套用 CSS 樣式，id="chat-box" 供 JavaScript 操作*/
+    <div id="chat-box" class="chat-container"></div>		
 
     <!-- 輸入框與按鈕 -->
-    <div class="chat-input-wrapper">		/*包住下方輸入框與按鈕的區塊，CSS 控制其排版與樣式*/
-        <input type="text" id="user-input" placeholder="請輸入您的問題…" />	/*文字輸入框，使用者輸入問題。id="user-input" 供 JS 讀取，placeholder 為灰色提示文字。*/
-        <button class="send-btn" onclick="sendMessage()">發送</button>		/*送出按鈕，點擊時呼叫 sendMessage() 函式*/
+    <div class="chat-input-wrapper">		
+        <input type="text" id="user-input" placeholder="請輸入您的問題…" />	
+        <button class="send-btn" onclick="sendMessage()">發送</button>		
     </div>
 
-    <script>	/*JavaScript 功能*/
+    <script>
         // 初始載入歷史紀錄
-        document.addEventListener("DOMContentLoaded", () => {	/*等頁面載入完成後再執行內部程式碼*/
-            const savedHistory = localStorage.getItem("chatHistory");	/*從瀏覽器 localStorage 取得先前儲存的聊天紀錄*/
+        document.addEventListener("DOMContentLoaded", () => {	
+            const savedHistory = localStorage.getItem("chatHistory");
             if (savedHistory) {
                 document.getElementById("chat-box").innerHTML = savedHistory;
                 scrollToBottom();
-            }													/*如果有歷史紀錄，載入進聊天區域，並滑到最底*/
+            }
         });
 
         // 儲存紀錄
         function saveHistory() {
             const chatBox = document.getElementById("chat-box");
             localStorage.setItem("chatHistory", chatBox.innerHTML);
-        }												/*把目前對話記錄存到 localStorage*/
+        }
 
         // 滑到底部
         function scrollToBottom() {
             const chatBox = document.getElementById("chat-box");
             chatBox.scrollTop = chatBox.scrollHeight;
-        }												/*強制滾動至最底部，讓最新訊息顯示出來*/
+        }
 
         // 發送訊息
         async function sendMessage() {
             const input = document.getElementById("user-input");
-            const message = input.value.trim();				/*取得使用者輸入並去除前後空白*/
-            if (!message) return;								/*若未輸入內容，直接退出函式*/
+            const message = input.value.trim();
+            if (!message) return;
 
             const chatBox = document.getElementById("chat-box");
             chatBox.innerHTML += `<div class="user-msg"><b>你：</b> ${message}</div>`;
-            input.value = "";									/*顯示使用者輸入內容，然後清空輸入框*/
+            input.value = "";
 
             const loadingMsg = document.createElement("div");
             loadingMsg.className = "bot-msg";
             loadingMsg.innerHTML = '<b>AI：</b> <span class="loading-dots"><span>•</span><span>•</span><span>•</span></span>';
             chatBox.appendChild(loadingMsg);
-            scrollToBottom();								/*加上一個「等待回覆」動畫（…）*/
+            scrollToBottom();
 
-            try {											/*傳送 API 請求*/
+            try {
                 const response = await fetch('/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ question: message })
-                });											/*以 POST 方法傳送 JSON 格式的問題給後端 /ask API*/
+                });
 
                 const data = await response.json();
-                loadingMsg.remove();							/*等待回應並刪除 loading 效果*/
+                loadingMsg.remove();
 
                 if (data.answer) {
-                    let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;	/*處理 AI 回答內容*/
+                    let answerHtml = `<div class="bot-msg"><b>AI：</b> ${data.answer}</div>`;
                     if (data.context && data.context.length > 0) {
-                        answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;	/*如果後端有傳回資料來源，就用 <ul> 顯示清單*/
+                        answerHtml += `<div class="source-box"><b>📄 資料來源：</b><ul>`;
                         for (const chunk of data.context) {
                             if (chunk.trim()) {
-                                answerHtml += `<li>${chunk.trim()}</li>`;	/*每一筆來源資訊顯示為 <li>*/
+                                answerHtml += `<li>${chunk.trim()}</li>`;
                             }
                         }
                         answerHtml += `</ul></div>`;
@@ -88,7 +88,7 @@
             } catch (err) {
                 loadingMsg.remove();
                 chatBox.innerHTML += `<div class="bot-msg error"><b>❌ 錯誤：</b> ${err.message}</div>`;
-            }												/*如果有錯誤或沒有回應，就顯示錯誤訊息*/
+            }
 
             saveHistory();
             scrollToBottom();
